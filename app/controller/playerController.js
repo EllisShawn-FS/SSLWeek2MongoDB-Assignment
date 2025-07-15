@@ -38,13 +38,19 @@ const getPlayerById = async (req, res) => {
 
 // POST 
 const createPlayer = async (req, res) => {
-    const { player } = req.body;
-    const newPlayer = await Players.create(player);
-    console.log("data >>>>", newPlayer);
-    res.status(200).json({
-        success: true,
-        message: `Player Created`
-    });
+    try {
+        const newPlayer = await Players.create(req.body);
+        res.status(200).json({
+            success: true,
+            data: newPlayer,
+            message: "Player Created"
+        })
+    } catch (err) {
+        res.status(400).json({
+            success: false,
+            message: err.message,
+        })
+    }
 };
 
 

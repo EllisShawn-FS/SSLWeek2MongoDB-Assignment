@@ -27,7 +27,7 @@ const playersSchema = new mongoose.Schema({
         required: true,
         enum: [
             "Quarterback", "Runningback", "Fullback",
-            "Widereceiver", "Tight End", "Left Tackle", "Right Tackle", "Left Guard", "Right Guard", "Center", "Defensive Tackle", "Defensive End", "Linebacker", "Outside Linebacker", "Middle Linebacker", "Cornerback", "Safety", "Free Safety", "Strong Safety", "Kicker", "Punter", "Kick Returner", "Punt Returner", "Long Snapper"
+            "Widereceiver", "Tight End", "Left Tackle", "Right Tackle", "Left Guard", "Right Guard", "Center", "Defensive Tackle", "Defensive End", "Linebacker", "Outside Linebacker", "Middle Linebacker", "Cornerback", "Safety", "Free Safety", "Strong Safety", "Kicker", "Punter", "Kick Returner", "Punt Returner", "Long Snapper",
         ]
     },
     team: { type: mongoose.Schema.Types.ObjectId, ref: "Team"},

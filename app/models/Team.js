@@ -11,7 +11,7 @@ const teamSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        enum: ["Football", "Soccer", "Basketball", "Baseball", "Hockey"]
+        enum: ["Football"]
     },
     city: { 
         type: String,
