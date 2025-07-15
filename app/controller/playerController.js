@@ -1,8 +1,9 @@
 const Players = require("../models/Players")
+const Messages = require("../messages/messages")
 
 // GET
 const getAllPlayers = async (req, res) => {
-    const players = await Players.find({}).populate("team");
+    const players = await Players.find({}).select('-__v').populate("team", "name -_id");
     res.status(200).json({
         data: players,
         success: true,
@@ -10,28 +11,30 @@ const getAllPlayers = async (req, res) => {
 };
 
 const getPlayerById = async (req, res) => {
-    const { id } = req.params; 
+    const { id } = req.params;
 
     try {
-        const player = await Players.findById(id);
+        const player = await Players.findById(id)
+            .select('-__v')
+            .populate("team", "name -_id");
 
         if (!player) {
             return res.status(404).json({
                 success: false,
-                message: "Player not found"
+                message: Messages.PLAYER_NOT_FOUND
             });
         }
 
         res.status(200).json({
-                data: player,
-                success: true,
-                message: `Player Found`
-            })
+            data: player,
+            success: true,
+            message: `Player Found`
+        });
     } catch (err) {
         res.status(404).json({
             success: false,
             message: err.message,
-        })
+        });
     }
 };
 
@@ -43,7 +46,7 @@ const createPlayer = async (req, res) => {
         res.status(200).json({
             success: true,
             data: newPlayer,
-            message: "Player Created"
+            message: Messages.PLAYER_CREATED
         })
     } catch (err) {
         res.status(400).json({
@@ -62,7 +65,7 @@ const updatePlayer = async (req, res) => {
     res.status(200).json({
         data: player,
         success: true,
-        message: `Player Updated`
+        message: Messages.PLAYER_UPDATED
     })
 };
 
@@ -77,14 +80,14 @@ const deletePlayer = async (req, res) => {
         if (!deletedPlayer) {
             return res.status(404).json({
                 success: false,
-                message: "Player not found"
+                message: Messages.PLAYER_NOT_FOUND
             });
         }
         
             res.status(200).json({
                 data: deletedPlayer,
                 success: true,
-                message: `Player Released`
+                message: Messages.PLAYER_DELETED
             })
     } catch (err) {
             res.status(404).json({

@@ -1,7 +1,8 @@
-const Team = require("../models/Team")
+const Team = require("../models/Team");
+const Messages = require("../messages/messages")
 
 const getAllTeams = async (req, res) => {
-    const teams = await Team.find({});
+    const teams = await Team.find({}).select('-__v');
     res.status(200).json({
         data: teams,
         success: true,
@@ -12,12 +13,12 @@ const getTeamById = async (req, res) => {
     const { id } = req.params;
 
     try {
-            const team = await Team.findById(id);
+            const team = await Team.findById(id).select('-__v');
     
             if (!team) {
                 return res.status(404).json({
                     success: false,
-                    message: "Team not found"
+                    message: Messages.TEAM_NOT_FOUND
                 });
             }
     
@@ -41,7 +42,7 @@ const createTeam = async (req, res) => {
         res.status(200).json({
             success: true,
             data: newTeam,
-            message: "Team created"
+            message: Messages.TEAM_CREATED
         })
     } catch (err) {
         res.status(400).json({
@@ -60,13 +61,13 @@ const updateTeam = async (req, res) => {
         if (!team) {
             return res.status(404).json({
                 success: false,
-                message: "Team not found",
+                message: Messages.TEAM_NOT_FOUND
             })
         }
         res.status(200).json({
             data: team,
             success: true,
-            message: `Team Updated`
+            message: Messages.TEAM_UPDATED
         })
     } catch (err){
         res.status(404).json({
@@ -86,14 +87,14 @@ const deleteTeam = async (req, res) => {
         if (!deletedTeam) {
             return res.status(404).json({
                 success: false,
-                message: "Team not found"
+                message: Messages.TEAM_NOT_FOUND
             });
         }
     
         res.status(200).json({
         data: deletedTeam,
         success: true,
-        message: `Team Deleted`
+        message: Messages.TEAM_DELETED
         })
     } catch (err) {
         res.status(404).json({
