@@ -18,7 +18,6 @@ const playersSchema = new mongoose.Schema({
     jersey: {
         type: Number,
         required: true,
-        unique: true,
         min: 0,
         max: 99,
     },

@@ -1,13 +1,27 @@
 const Players = require("../models/Players")
+const Team = require("../models/Team")
 const Messages = require("../messages/messages")
 
 // GET
 const getAllPlayers = async (req, res) => {
-    const players = await Players.find({}).select('-__v').populate("team", "name -_id");
-    res.status(200).json({
-        data: players,
-        success: true,
-    });
+    try {
+        let querString = JSON.stringify(req.query);
+
+        querString = querString.replace(
+            /\b(gt|gte|lt|lte)\b/g, 
+            (match) => `$${match}`
+        );
+        console.log(JSON.parse(querString));
+
+        const players = await Players.find(JSON.parse(querString));
+
+        res.status(200).json({
+            success: true,
+            data: players,
+        });
+    } catch (err) {
+        res.status(400).json({ success: false, message: err.message });
+    }
 };
 
 const getPlayerById = async (req, res) => {
@@ -43,11 +57,21 @@ const getPlayerById = async (req, res) => {
 const createPlayer = async (req, res) => {
     try {
         const newPlayer = await Players.create(req.body);
+        
+
+        if (newPlayer.team) {
+            await Team.findByIdAndUpdate(
+                newPlayer.team,
+                { $push: { players: newPlayer._id } },
+                { new: true }
+            );
+        }
+
         res.status(200).json({
             success: true,
             data: newPlayer,
             message: Messages.PLAYER_CREATED
-        })
+        });
     } catch (err) {
         res.status(400).json({
             success: false,

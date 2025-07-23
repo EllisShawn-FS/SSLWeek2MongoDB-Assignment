@@ -1,7 +1,11 @@
 const express = require ("express");
 const morgan =require("morgan");
+const qs = require("qs");
+
 const app = express();
 const routeHandler = require("./routes");
+
+app.set('query parser', str => qs.parse(str));
 
 app.use(express.json()); // Helps see http methods
 app.use(morgan("dev")) // Flags out http calls

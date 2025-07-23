@@ -1,8 +1,18 @@
 const Team = require("../models/Team");
-const Messages = require("../messages/messages")
+const Messages = require("../messages/messages");
+const Players = require("../models/Players");
 
 const getAllTeams = async (req, res) => {
-    const teams = await Team.find({}).select('-__v');
+    let querString = JSON.stringify(req.query);
+
+    querString = querString.replace(
+        /\b(gt|gte|lt|lte)\b/g, 
+        (match) => `$${match}`
+    );
+    console.log(JSON.parse(querString));
+
+    const teams = await Team.find(JSON.parse(querString)).select('-__v');
+
     res.status(200).json({
         data: teams,
         success: true,
@@ -13,7 +23,7 @@ const getTeamById = async (req, res) => {
     const { id } = req.params;
 
     try {
-            const team = await Team.findById(id).select('-__v');
+            const team = await Team.findById(id).select('-__v').populate("players", "name -_id");
     
             if (!team) {
                 return res.status(404).json({
@@ -39,6 +49,13 @@ const getTeamById = async (req, res) => {
 const createTeam = async (req, res) => {
     try {
         const newTeam = await Team.create(req.body);
+
+        if (newTeam.players && newTeam.players.length > 0) {
+            await Players.updateMany(
+                {_id: { $in: newTeam.players } },
+                { $set: { team: newTeam._id } }
+            );
+        }
         res.status(200).json({
             success: true,
             data: newTeam,
