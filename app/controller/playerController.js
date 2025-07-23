@@ -11,9 +11,32 @@ const getAllPlayers = async (req, res) => {
             /\b(gt|gte|lt|lte)\b/g, 
             (match) => `$${match}`
         );
-        console.log(JSON.parse(querString));
 
-        const players = await Players.find(JSON.parse(querString));
+        const queryObj = JSON.parse(querString);
+
+        let query = Players.find(queryObj)
+
+        if (req.query.fields) {
+            const fields = req.query.fields.split(',').join(' ');
+            query = query.select(fields);
+        } else {
+            query = query.select('-__v');
+        }
+
+        if (req.query.sort) {
+            const sortBy = req.query.sort.split(',').join(' ');
+            query = query.sort(sortBy);
+        } else {
+            query = query.sort('age');
+        }
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 7;
+        const skip = (page - 1) * limit;
+
+        query = query.skip(skip).limit(limit);
+
+        const players = await query;
 
         res.status(200).json({
             success: true,
